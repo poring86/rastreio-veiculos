@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - MONGO_URI=mongodb://root:root@mongo:27017/routes?authSource=admin&directConnection=true
+      - MONGO_URI=mongodb://root:root@mongo:27017/simulator?authSource=admin&directConnection=true
       - KAFKA_BROKER=kafka:9092
       - KAFKA_ROUTE_TOPIC=route
       - KAFKA_FREIGHT_TOPIC=freight

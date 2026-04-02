@@ -10,6 +10,7 @@ export type RouteModel = {
   destination: { name: string; location: { lat: number; lng: number } };
   distance: number;
   duration: number;
+  freight: number | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   directions: DirectionsResponseData & { request: any };
   created_at: Date;

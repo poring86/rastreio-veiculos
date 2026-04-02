@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/devfullcycle/imersao20/simulator/internal"
+	"simulator/internal"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -14,7 +14,8 @@ import (
 )
 
 func main() {
-	mongoURI := getEnv("MONGO_URI", "mongodb://admin:admin@mongo:27017/routes?authSource=admin")
+	fmt.Println(" --- Simulator Engine Initializing --- ")
+	mongoURI := getEnv("MONGO_URI", "mongodb://root:root@mongo:27017/simulator?authSource=admin")
 	kafkaBroker := getEnv("KAFKA_BROKER", "kafka:9092")
 	kafkaRouteTopic := getEnv("KAFKA_ROUTE_TOPIC", "route")
 	kafkaFreightTopic := getEnv("KAFKA_FREIGHT_TOPIC", "freight")

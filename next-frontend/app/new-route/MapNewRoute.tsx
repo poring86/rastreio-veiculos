@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-import { useMap } from "../hooks/useMap";
-import { DirectionsData } from "../utils/models";
+import { useMap } from "../../hooks/useMap";
+import { DirectionsData } from "../../utils/models";
 
 export type MapNewRouteProps = {
   directionsData: DirectionsData;
@@ -34,5 +33,5 @@ export function MapNewRoute(props: MapNewRouteProps) {
     });
   }, [map, directionsData]);
 
-  return <div className="w-2/3 h-full" ref={mapContainerRef} />;
+  return <div className="flex-1 h-full" ref={mapContainerRef} />;
 }

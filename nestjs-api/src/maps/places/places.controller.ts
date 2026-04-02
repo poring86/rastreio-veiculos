@@ -9,5 +9,4 @@ export class PlacesController {
   findPlaces(@Query('text') text: string) {
     return this.placesService.findPlaces(text);
   }
-
 }

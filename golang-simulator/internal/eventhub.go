@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/segmentio/kafka-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +14,7 @@ type EventHub struct {
 	routeService        *RouteService
 	mongoClient         *mongo.Client
 	chDriverMoved       chan *DriverMovedEvent
-	chFrieghtCalculated chan *FreightCalculatedEvent
+	chFreightCalculated chan *FreightCalculatedEvent
 	freightWriter       *kafka.Writer
 	simulationWriter    *kafka.Writer
 }
@@ -32,7 +31,7 @@ func NewEventHub(
 		routeService:        routeService,
 		mongoClient:         mongoClient,
 		chDriverMoved:       chDriverMoved,
-		chFrieghtCalculated: chFreightCalculated,
+		chFreightCalculated: chFreightCalculated,
 		freightWriter:       freightWriter,
 		simulationWriter:    simulationWriter,
 	}
@@ -49,6 +48,7 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 
 	switch baseEvent.EventName {
 	case "RouteCreated":
+		fmt.Printf("Received RouteCreated event\n")
 		var event RouteCreatedEvent
 		if err := json.Unmarshal(msg, &event); err != nil {
 			return fmt.Errorf("error unmarshaling RouteCreatedEvent: %w", err)
@@ -56,6 +56,7 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 		return eh.handleRouteCreated(event)
 
 	case "DeliveryStarted":
+		fmt.Printf("Received DeliveryStarted event for route: %s\n", msg)
 		var event DeliveryStartedEvent
 		if err := json.Unmarshal(msg, &event); err != nil {
 			return fmt.Errorf("error unmarshaling DeliveryStartedEvent: %w", err)
@@ -63,6 +64,7 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 		return eh.handleDeliveryStarted(event)
 
 	default:
+		fmt.Printf("Unknown event received: %s\n", baseEvent.EventName)
 		return errors.New("unknown event type")
 	}
 }
@@ -91,18 +93,13 @@ func (eh *EventHub) handleDeliveryStarted(event DeliveryStartedEvent) error {
 	}
 
 	go func() {
-		for {
-			select {
-			case movedEvent := <-eh.chDriverMoved:
-				value, _ := json.Marshal(movedEvent)
-				if err := eh.simulationWriter.WriteMessages(context.Background(), kafka.Message{
-					Key:   []byte(movedEvent.RouteID),
-					Value: value,
-				}); err != nil {
-					fmt.Printf("Error producing DriverMovedEvent: %v\n", err)
-				}
-			case <-time.After(500 * time.Millisecond):
-				return
+		for movedEvent := range eh.chDriverMoved {
+			value, _ := json.Marshal(movedEvent)
+			if err := eh.simulationWriter.WriteMessages(context.Background(), kafka.Message{
+				Key:   []byte(movedEvent.RouteID),
+				Value: value,
+			}); err != nil {
+				fmt.Printf("Error producing DriverMovedEvent: %v\n", err)
 			}
 		}
 	}()

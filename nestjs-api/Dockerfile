@@ -8,4 +8,4 @@ USER node
 
 WORKDIR /home/node/app
 
-CMD [ "tail", "-f", "/dev/null" ]
+CMD bash -c "npm install && npx prisma@6.0.1 generate && npm run start:dev"

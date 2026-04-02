@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MapNewRoute } from "./MapNewRoute";
 import { NewRouteForm } from "./NewRouteForm";
 
@@ -80,95 +81,120 @@ export async function NewRoutePage({
   }
 
   return (
-    <div className="flex flex-1 w-full h-full">
-      <div className="w-1/3 p-4 h-full">
-        <h4 className="text-3xl text-contrast mb-2">Nova rota</h4>
-        <form className="flex flex-col space-y-4" method="get">
-          <div className="relative">
+    <div className="flex flex-1 w-full h-full min-h-0">
+      <div className="w-1/3 p-6 h-full overflow-y-auto bg-card shadow-xl z-10 border-r border-border">
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h4 className="text-2xl font-extrabold text-default mb-2">Nova Rota</h4>
+            <p className="text-muted text-sm">Preencha os detalhes para calcular o frete e criar um novo trajeto.</p>
+          </div>
+          <Link href="/" className="mt-1 p-2 rounded-lg bg-background border border-border text-muted hover:text-main hover:border-main transition-all shadow-sm group" title="Voltar para o Início">
+             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-0.5 transition-transform"><path d="m15 18-6-6 6-6"/></svg>
+          </Link>
+        </div>
+        
+        <form className="flex flex-col space-y-6" method="get">
+          <div className="relative group">
             <input
               id="source"
               name="source"
               type="search"
               placeholder=""
               defaultValue={source}
-              className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-contrast bg-default border-0 border-b-2 border-contrast appearance-none focus:outline-none focus:ring-0 focus:border-primary peer"
+              className="block rounded-xl px-4 pb-2.5 pt-6 w-full text-sm text-default bg-background border border-border focus:border-main focus:ring-1 focus:ring-main outline-none transition-all peer h-14"
             />
             <label
               htmlFor="source"
-              className="absolute text-contrast duration-300 transform -translate-y-4 scale-75 top-3 z-10 origin-[0] start-2.5 peer-focus:text-secondary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
             >
               Origem
             </label>
           </div>
-          <div className="relative">
+          <div className="relative group">
             <input
               id="destination"
               name="destination"
               type="search"
               placeholder=""
               defaultValue={destination}
-              className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-contrast bg-default border-0 border-b-2 border-contrast appearance-none focus:outline-none focus:ring-0 focus:border-primary peer"
+              className="block rounded-xl px-4 pb-2.5 pt-6 w-full text-sm text-default bg-background border border-border focus:border-main focus:ring-1 focus:ring-main outline-none transition-all peer h-14"
             />
             <label
               htmlFor="destination"
-              className="absolute text-contrast duration-300 transform -translate-y-4 scale-75 top-3 z-10 origin-[0] start-2.5 peer-focus:text-secondary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
             >
               Destino
             </label>
           </div>
           <button
             type="submit"
-            className="bg-main text-primary p-2 rounded text-xl font-bold"
+            className="bg-main text-white py-3 rounded-xl text-lg font-bold shadow-glow hover:bg-accent transition-all active:scale-95"
           >
-            Pesquisar
+            Pesquisar Trajeto
           </button>
         </form>
+        
         {directionsData && (
-          <div className="mt-4 p-4 border rounded text-contrast">
-            <ul>
-              <li className="mb-2">
-                <strong>Origem:</strong>{" "}
-                {directionsData.routes[0].legs[0].start_address}
-              </li>
-              <li className="mb-2">
-                <strong>Destino:</strong>{" "}
-                {directionsData.routes[0].legs[0].end_address}
-              </li>
-              <li className="mb-2">
-                <strong>Distância:</strong>{" "}
-                {directionsData.routes[0].legs[0].distance.text}
-              </li>
-              <li className="mb-2">
-                <strong>Duração:</strong>{" "}
-                {directionsData.routes[0].legs[0].duration.text}
-              </li>
-            </ul>
-            <NewRouteForm>
-              {placeSourceId && (
-                <input
-                  type="hidden"
-                  name="sourceId"
-                  defaultValue={placeSourceId}
-                />
-              )}
-              {placeDestinationId && (
-                <input
-                  type="hidden"
-                  name="destinationId"
-                  defaultValue={placeDestinationId}
-                />
-              )}
-              <button
-                type="submit"
-                className="bg-main text-primary font-bold p-2 rounded mt-4"
-              >
-                Adicionar rota
-              </button>
-            </NewRouteForm>
+          <div className="mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
+             <div className="p-6 bg-card rounded-2xl border border-border space-y-4">
+                <div className="flex flex-col space-y-1">
+                  <span className="text-xs uppercase tracking-wider text-muted font-bold">Resumo da Rota</span>
+                  <p className="text-sm font-medium text-default leading-relaxed">
+                    De: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].start_address}</span>
+                  </p>
+                  <p className="text-sm font-medium text-default leading-relaxed">
+                    Para: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].end_address}</span>
+                  </p>
+                </div>
+                
+                <div className="flex space-x-8 pt-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted uppercase font-bold">Distância</span>
+                    <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].distance.text}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted uppercase font-bold">Duração</span>
+                    <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].duration.text}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted uppercase font-bold">Frete</span>
+                    <span className="text-lg font-extrabold text-main">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+                            Math.floor((directionsData.routes[0].legs[0].distance.value * 0.15 + 0.3) * 100) / 100
+                        )}
+                    </span>
+                  </div>
+                </div>
+
+                <NewRouteForm>
+                  {placeSourceId && (
+                    <input
+                      type="hidden"
+                      name="sourceId"
+                      defaultValue={placeSourceId}
+                    />
+                  )}
+                  {placeDestinationId && (
+                    <input
+                      type="hidden"
+                      name="destinationId"
+                      defaultValue={placeDestinationId}
+                    />
+                  )}
+                  <button
+                    type="submit"
+                    className="w-full bg-default text-white font-bold py-3 rounded-xl mt-4 hover:bg-slate-800 transition-all active:scale-95 shadow-lg"
+                  >
+                    Confirmar e Salvar Rota
+                  </button>
+                </NewRouteForm>
+             </div>
           </div>
         )}
       </div>
-      <MapNewRoute directionsData={directionsData} />
+      <div className="flex-1 h-full min-h-0 container-map">
+        <MapNewRoute directionsData={directionsData} />
+      </div>
     </div>
   );
 }

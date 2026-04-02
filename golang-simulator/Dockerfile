@@ -2,11 +2,13 @@ FROM golang:alpine
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-
-RUN go mod download
+RUN apk add --no-cache git
 
 COPY . .
 
-CMD ["tail", "-f", "/dev/null"]
+RUN go mod tidy
+
+RUN CGO_ENABLED=0 go build -o /main cmd/simulator/main.go
+
+CMD ["/main"]
 

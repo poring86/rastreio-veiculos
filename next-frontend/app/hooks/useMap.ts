@@ -1,38 +1,22 @@
-
-import { useEffect, useState, RefObject } from "react";
+import { Loader } from "@googlemaps/js-api-loader";
+import { useEffect, useState } from "react";
 import { Map } from "../utils/map";
 import { getCurrentPosition } from "./geolocation";
 
-export function useMap(containerRef: RefObject<HTMLDivElement | null>) {
+export function useMap(containerRef: React.RefObject<HTMLDivElement | null>) {
   const [map, setMap] = useState<Map>();
 
   useEffect(() => {
     (async () => {
-      const { setOptions, importLibrary } = await import("@googlemaps/js-api-loader");
-      
-      setOptions({
-        key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+      const loader = new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+        libraries: ["routes", "geometry", "marker"],
       });
-
-      const [, , , , position] = await Promise.all([
-        importLibrary("routes"),
-        importLibrary("geometry"),
-        importLibrary("marker"),
-        importLibrary("maps"),
-        Promise.race([
-          getCurrentPosition({ enableHighAccuracy: true }),
-          new Promise<{ lat: number; lng: number }>((resolve) =>
-            setTimeout(
-              () => resolve({ lat: -23.55052, lng: -46.633308 }),
-              2000
-            )
-          ), // Default: Sao Paulo after 2s
-        ])
-          .then((position) => position)
-          .catch((e) => {
-            console.error(e);
-            return { lat: -23.55052, lng: -46.633308 };
-          }),
+      const [, , , position] = await Promise.all([
+        loader.importLibrary("routes"),
+        loader.importLibrary("geometry"),
+        loader.importLibrary("marker"),
+        getCurrentPosition({ enableHighAccuracy: true }),
       ]);
       const map = new Map(containerRef.current!, {
         mapId: "8e0a97af9386fef", //theme

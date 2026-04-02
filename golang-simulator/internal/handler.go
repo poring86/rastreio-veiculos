@@ -9,11 +9,11 @@ import (
 type RouteCreatedEvent struct {
 	EventName  string       `json:"event"`
 	RouteID    string       `json:"id"`
-	Distance   int          `json:"distance"`
+	Distance   float64      `json:"distance"`
 	Directions []Directions `json:"directions"`
 }
 
-func NewRouteCreatedEvent(routeID string, distance int, directions []Directions) *RouteCreatedEvent {
+func NewRouteCreatedEvent(routeID string, distance float64, directions []Directions) *RouteCreatedEvent {
 	return &RouteCreatedEvent{
 		EventName:  "RouteCreated",
 		RouteID:    routeID,
@@ -70,7 +70,7 @@ func RouteCreatedHandler(event *RouteCreatedEvent, routeService *RouteService, m
 	if err != nil {
 		return nil, err
 	}
-	return NewFreightCalculatedEvent(routeCreated.ID, routeCreated.FreightPrice), nil
+	return NewFreightCalculatedEvent(routeCreated.ID, routeCreated.Freight), nil
 }
 
 func DeliveryStartedHandler(event *DeliveryStartedEvent, routeService *RouteService, mongoClient *mongo.Client, ch chan *DriverMovedEvent) error {

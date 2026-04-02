@@ -1,0 +1,8 @@
+services:
+  next:
+    build: .
+    volumes:
+      - .:/home/node/app
+    ports:
+      - 3001:3000
+    command: npm run dev
