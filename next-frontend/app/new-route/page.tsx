@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { MapNewRoute } from "./MapNewRoute";
 import { NewRouteForm } from "./NewRouteForm";
+import { getNestApiUrl } from "../../utils/api-url";
 
 export async function searchDirections(source: string, destination: string) {
   console.log(source, destination);
+  const apiUrl = getNestApiUrl();
+  if (!apiUrl) throw new Error("API URL is not configured");
   const [sourceResponse, destinationResponse] = await Promise.all([
-    fetch(`${process.env.NEST_API_URL}/places?text=${source}`, {
+    fetch(`${apiUrl}/places?text=${source}`, {
       // cache: "force-cache", //default
       // next: {
       //   revalidate: 1 * 60 * 60 * 24, // 1 dia
       // }
     }),
-    fetch(`${process.env.NEST_API_URL}/places?text=${destination}`, {
+    fetch(`${apiUrl}/places?text=${destination}`, {
       // cache: "force-cache", //default
       // next: {
       //   revalidate: 1 * 60 * 60 * 24, // 1 dia
@@ -89,10 +92,10 @@ export async function NewRoutePage({
             <p className="text-muted text-sm">Preencha os detalhes para calcular o frete e criar um novo trajeto.</p>
           </div>
           <Link href="/" className="mt-1 p-2 rounded-lg bg-background border border-border text-muted hover:text-main hover:border-main transition-all shadow-sm group" title="Voltar para o Início">
-             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-0.5 transition-transform"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-0.5 transition-transform"><path d="m15 18-6-6 6-6" /></svg>
           </Link>
         </div>
-        
+
         <form className="flex flex-col space-y-6" method="get">
           <div className="relative group">
             <input
@@ -105,7 +108,7 @@ export async function NewRoutePage({
             />
             <label
               htmlFor="source"
-              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-1 peer-focus:scale-75 peer-focus:-translate-y-4"
             >
               Origem
             </label>
@@ -121,7 +124,7 @@ export async function NewRoutePage({
             />
             <label
               htmlFor="destination"
-              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+              className="absolute text-muted duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-focus:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-1 peer-focus:scale-75 peer-focus:-translate-y-4"
             >
               Destino
             </label>
@@ -133,62 +136,62 @@ export async function NewRoutePage({
             Pesquisar Trajeto
           </button>
         </form>
-        
+
         {directionsData && (
           <div className="mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
-             <div className="p-6 bg-card rounded-2xl border border-border space-y-4">
-                <div className="flex flex-col space-y-1">
-                  <span className="text-xs uppercase tracking-wider text-muted font-bold">Resumo da Rota</span>
-                  <p className="text-sm font-medium text-default leading-relaxed">
-                    De: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].start_address}</span>
-                  </p>
-                  <p className="text-sm font-medium text-default leading-relaxed">
-                    Para: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].end_address}</span>
-                  </p>
-                </div>
-                
-                <div className="flex space-x-8 pt-2">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted uppercase font-bold">Distância</span>
-                    <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].distance.text}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted uppercase font-bold">Duração</span>
-                    <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].duration.text}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted uppercase font-bold">Frete</span>
-                    <span className="text-lg font-extrabold text-main">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-                            Math.floor((directionsData.routes[0].legs[0].distance.value * 0.15 + 0.3) * 100) / 100
-                        )}
-                    </span>
-                  </div>
-                </div>
+            <div className="p-6 bg-card rounded-2xl border border-border space-y-4">
+              <div className="flex flex-col space-y-1">
+                <span className="text-xs uppercase tracking-wider text-muted font-bold">Resumo da Rota</span>
+                <p className="text-sm font-medium text-default leading-relaxed">
+                  De: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].start_address}</span>
+                </p>
+                <p className="text-sm font-medium text-default leading-relaxed">
+                  Para: <span className="text-muted font-normal">{directionsData.routes[0].legs[0].end_address}</span>
+                </p>
+              </div>
 
-                <NewRouteForm>
-                  {placeSourceId && (
-                    <input
-                      type="hidden"
-                      name="sourceId"
-                      defaultValue={placeSourceId}
-                    />
-                  )}
-                  {placeDestinationId && (
-                    <input
-                      type="hidden"
-                      name="destinationId"
-                      defaultValue={placeDestinationId}
-                    />
-                  )}
-                  <button
-                    type="submit"
-                    className="w-full bg-default text-white font-bold py-3 rounded-xl mt-4 hover:bg-slate-800 transition-all active:scale-95 shadow-lg"
-                  >
-                    Confirmar e Salvar Rota
-                  </button>
-                </NewRouteForm>
-             </div>
+              <div className="flex space-x-8 pt-2">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted uppercase font-bold">Distância</span>
+                  <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].distance.text}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted uppercase font-bold">Duração</span>
+                  <span className="text-lg font-extrabold text-main">{directionsData.routes[0].legs[0].duration.text}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted uppercase font-bold">Frete</span>
+                  <span className="text-lg font-extrabold text-main">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+                      Math.floor((directionsData.routes[0].legs[0].distance.value * 0.15 + 0.3) * 100) / 100
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <NewRouteForm>
+                {placeSourceId && (
+                  <input
+                    type="hidden"
+                    name="sourceId"
+                    defaultValue={placeSourceId}
+                  />
+                )}
+                {placeDestinationId && (
+                  <input
+                    type="hidden"
+                    name="destinationId"
+                    defaultValue={placeDestinationId}
+                  />
+                )}
+                <button
+                  type="submit"
+                  className="w-full bg-default text-contrast font-bold py-3 rounded-xl mt-4 hover:opacity-90 transition-all active:scale-95 shadow-lg"
+                >
+                  Confirmar e Salvar Rota
+                </button>
+              </NewRouteForm>
+            </div>
           </div>
         )}
       </div>

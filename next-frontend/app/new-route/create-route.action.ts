@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidateTag } from "next/cache";
+import { getNestApiUrl } from "../../utils/api-url";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createRouteAction(state: any, formData: FormData) {
   const { sourceId, destinationId } = Object.fromEntries(formData);
-
+  const apiUrl = getNestApiUrl();
   const directionsResponse = await fetch(
-    `${process.env.NEST_API_URL}/directions?originId=${sourceId}&destinationId=${destinationId}`,
+    `${apiUrl}/directions?originId=${sourceId}&destinationId=${destinationId}`,
     {
       // cache: "force-cache", //default
       // next: {
@@ -26,7 +27,7 @@ export async function createRouteAction(state: any, formData: FormData) {
   const startAddress = directionsData.routes[0].legs[0].start_address;
   const endAddress = directionsData.routes[0].legs[0].end_address;
 
-  const response = await fetch(`${process.env.NEST_API_URL}/routes`, {
+  const response = await fetch(`${apiUrl}/routes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,27 +1,25 @@
 "use server";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function startRouteAction(state: any, formData: FormData) {
+import { getNestApiUrl } from "../../utils/api-url";
+
+type StartRouteResult = { success: true } | { error: string };
+
+export async function startRouteAction(formData: FormData): Promise<StartRouteResult> {
   const { route_id } = Object.fromEntries(formData);
+  if (!route_id) return { error: "Route ID is required." };
 
-  if(!route_id){
-    return { error: "Route ID is required" };
-  }
+  const apiUrl = getNestApiUrl();
+  if (!apiUrl) return { error: "API URL is not configured." };
 
-  const url = `${process.env.NEST_API_URL}/routes/${route_id}/start`;
-  console.log('Fetching:', url);
-  const response = await fetch(
-    url,
-    {
-      method: "POST",
+  const url = `${apiUrl}/routes/${route_id}/start`;
+  try {
+    const response = await fetch(url, { method: "POST" });
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { error: `Failed to start route: ${response.status} - ${errorText}` };
     }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('API Response Error:', response.status, errorText);
-    return { error: `Failed to start route: ${response.status}` };
+    return { success: true };
+  } catch {
+    return { error: "Failed to connect to API." };
   }
-
-  return { success: true };
 }
