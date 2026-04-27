@@ -1,0 +1,2 @@
+# Permitir versionamento do .env.example do frontend
+!next-frontend/.env.example
