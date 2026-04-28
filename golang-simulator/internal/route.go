@@ -48,7 +48,13 @@ func NewFreightService() *FreightService {
 }
 
 func (fs *FreightService) Calculate(distance float64) float64 {
-	return math.Floor((float64(distance)*0.15+0.3)*100) / 100
+	// Calcular frete: R$ 3,00 por km, mínimo R$ 150
+	freight := distance * 3.0
+	if freight < 150.0 {
+		 freight = 150.0
+	}
+	// Arredondar para 2 casas decimais
+	return math.Round(freight*100) / 100
 }
 
 func (rs *RouteService) CreateRoute(route Route) (Route, error) {

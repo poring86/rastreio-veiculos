@@ -4,8 +4,14 @@ import { getNestApiUrl } from "../../utils/api-url";
 
 type StartRouteResult = { success: true } | { error: string };
 
-export async function startRouteAction(formData: FormData): Promise<StartRouteResult> {
-  const { route_id } = Object.fromEntries(formData);
+export async function startRouteAction(formData: FormData | Record<string, any>): Promise<StartRouteResult> {
+  let route_id: string | undefined;
+  if (formData instanceof FormData) {
+    const entry = Object.fromEntries(formData.entries()).route_id;
+    route_id = typeof entry === "string" ? entry : undefined;
+  } else if (typeof formData === "object" && formData !== null) {
+    route_id = formData.route_id;
+  }
   if (!route_id) return { error: "Route ID is required." };
 
   const apiUrl = getNestApiUrl();
